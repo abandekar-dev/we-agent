@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Work Engineering Agent</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+    <div class="app">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h1>WE Agent</h1>
+                <p class="subtitle">Work Engineering Assistant</p>
+            </div>
+
+            <!-- Agent Modes -->
+            <div class="sidebar-section">
+                <h3>Agent Mode</h3>
+                <div id="agent-list" class="agent-list"></div>
+            </div>
+
+            <!-- Model Config -->
+            <div class="sidebar-section">
+                <h3>Model</h3>
+                <div class="form-group">
+                    <label for="provider-select">Provider</label>
+                    <select id="provider-select"></select>
+                </div>
+                <div class="form-group">
+                    <label for="model-select">Model</label>
+                    <select id="model-select"></select>
+                </div>
+                <div class="form-group">
+                    <label for="api-key-input">API Key</label>
+                    <div class="api-key-wrapper">
+                        <input type="password" id="api-key-input" placeholder="Enter your API key">
+                        <button class="icon-btn" id="toggle-key" title="Show/hide key">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar-footer">
+                <button class="btn-clear" id="clear-chat">
+                    <i class="fas fa-trash-alt"></i> Clear Chat
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Chat Area -->
+        <main class="chat-main">
+            <header class="chat-header">
+                <button class="icon-btn mobile-menu" id="toggle-sidebar">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="header-info">
+                    <h2 id="current-agent-name">Work Engineering Assistant</h2>
+                    <span class="badge" id="current-model-badge">No model selected</span>
+                </div>
+            </header>
+
+            <div class="chat-messages" id="chat-messages">
+                <div class="welcome-screen" id="welcome-screen">
+                    <div class="welcome-icon"><i class="fas fa-compass"></i></div>
+                    <h2>Work Engineering Agent</h2>
+                    <p>Your AI-powered Work Design Engineering assistant. Select a model, enter your API key, and start asking questions.</p>
+                    <div class="starter-prompts">
+                        <button class="starter" data-prompt="What is Work Engineering and how does it differ from traditional org design?">
+                            What is Work Engineering?
+                        </button>
+                        <button class="starter" data-prompt="Help me classify the tasks in a Financial Analyst role using the A-E automation taxonomy.">
+                            Classify tasks for a role
+                        </button>
+                        <button class="starter" data-prompt="Walk me through the 10 scoping questions for a new Work Engineering engagement.">
+                            Scope an engagement
+                        </button>
+                        <button class="starter" data-prompt="What is the metabolic gap and how do I assess my organization's AI absorption capacity?">
+                            Explain metabolic gap
+                        </button>
+                        <button class="starter" data-prompt="Help me map the feedback loops that are preventing AI adoption in my organization.">
+                            Map change barriers
+                        </button>
+                        <button class="starter" data-prompt="How should I redesign our competency model for AI-augmented work?">
+                            Redesign competencies
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sources panel -->
+            <div class="sources-panel" id="sources-panel" style="display:none;">
+                <div class="sources-header">
+                    <span><i class="fas fa-book"></i> Sources</span>
+                    <button class="icon-btn" id="close-sources"><i class="fas fa-times"></i></button>
+                </div>
+                <div id="sources-list" class="sources-list"></div>
+            </div>
+
+            <div class="chat-input-area">
+                <div class="input-wrapper">
+                    <textarea id="chat-input" placeholder="Ask about Work Engineering..." rows="1"></textarea>
+                    <button class="send-btn" id="send-btn" disabled>
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+                <p class="input-hint">Press Enter to send, Shift+Enter for new line</p>
+            </div>
+        </main>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>
