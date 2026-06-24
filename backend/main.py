@@ -1,18 +1,24 @@
 """FastAPI backend for the Work Engineering Agent."""
 
+import logging
 from pathlib import Path
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
-from pydantic import BaseModel
+from pydantic import BaseModel, field_serializer
 
 from agents import get_agent, list_agents
 from llm_router import send_message, list_providers
 from knowledge import KnowledgeBase
 
-app = FastAPI(title="Work Engineering Agent")
+# Prevent API keys from leaking into logs
+logging.getLogger("uvicorn.access").addFilter(
+    lambda record: "api_key" not in getattr(record, "getMessage", lambda: "")()
+)
+
+app = FastAPI(title="Work Engineering Agent", docs_url=None, redoc_url=None)
 
 app.add_middleware(
     CORSMiddleware,
@@ -20,6 +26,23 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.middleware("http")
+async def security_headers(request: Request, call_next):
+    response = await call_next(request)
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["Referrer-Policy"] = "no-referrer"
+    response.headers["Content-Security-Policy"] = (
+        "default-src 'self'; "
+        "script-src 'self'; "
+        "style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; "
+        "font-src https://cdnjs.cloudflare.com; "
+        "connect-src 'self'; "
+        "img-src 'self' data:"
+    )
+    return response
 
 kb = KnowledgeBase()
 
@@ -30,6 +53,12 @@ class ChatRequest(BaseModel):
     model: str
     agent_id: str = "orchestrator"
     messages: list[dict]
+
+    def __repr__(self):
+        return f"ChatRequest(provider={self.provider}, model={self.model}, agent_id={self.agent_id}, api_key=***)"
+
+    def __str__(self):
+        return self.__repr__()
 
 
 class ChatResponse(BaseModel):

@@ -262,21 +262,61 @@ function escapeHtml(text) {
 }
 
 // --- Persistence ---
+// Preferences (provider, model, agent) go to localStorage — safe, no secrets.
+// API key optionally goes to sessionStorage — cleared on tab close.
+// Key is obfuscated (base64 + reverse) in storage — not encryption, but prevents
+// casual shoulder-surfing of dev tools.
+
+function obfuscate(str) {
+  return btoa(str.split("").reverse().join(""));
+}
+
+function deobfuscate(str) {
+  try {
+    return atob(str).split("").reverse().join("");
+  } catch {
+    return "";
+  }
+}
+
 function saveState() {
+  // Preferences only — no secrets
   localStorage.setItem(
-    "we-agent",
+    "we-agent-prefs",
     JSON.stringify({
       provider: state.provider,
       model: state.model,
       agentId: state.agentId,
-      apiKey: state.apiKey,
     })
   );
+
+  // Key in sessionStorage only if checkbox is checked
+  const saveKey = document.getElementById("save-key-checkbox")?.checked;
+  if (saveKey && state.apiKey) {
+    sessionStorage.setItem("we-agent-k", obfuscate(state.apiKey));
+  } else {
+    sessionStorage.removeItem("we-agent-k");
+  }
 }
 
 function loadSavedState() {
   try {
-    const saved = JSON.parse(localStorage.getItem("we-agent") || "{}");
+    // Load preferences
+    const saved = JSON.parse(localStorage.getItem("we-agent-prefs") || "{}");
+
+    // Migrate from old localStorage format (remove old key storage)
+    const oldData = localStorage.getItem("we-agent");
+    if (oldData) {
+      localStorage.removeItem("we-agent");
+      try {
+        const old = JSON.parse(oldData);
+        if (old.provider) saved.provider = saved.provider || old.provider;
+        if (old.model) saved.model = saved.model || old.model;
+        if (old.agentId) saved.agentId = saved.agentId || old.agentId;
+        // Intentionally do NOT migrate apiKey from old localStorage
+      } catch {}
+    }
+
     if (saved.provider) {
       state.provider = saved.provider;
       document.getElementById("provider-select").value = saved.provider;
@@ -287,12 +327,16 @@ function loadSavedState() {
       document.getElementById("model-select").value = saved.model;
       updateBadge();
     }
-    if (saved.apiKey) {
-      state.apiKey = saved.apiKey;
-      document.getElementById("api-key-input").value = saved.apiKey;
-    }
     if (saved.agentId) {
       selectAgent(saved.agentId);
+    }
+
+    // Load key from sessionStorage
+    const savedKey = sessionStorage.getItem("we-agent-k");
+    if (savedKey) {
+      state.apiKey = deobfuscate(savedKey);
+      document.getElementById("api-key-input").value = state.apiKey;
+      document.getElementById("save-key-checkbox").checked = true;
     }
   } catch {}
 }
@@ -339,6 +383,10 @@ function setupEventListeners() {
 
   document.getElementById("api-key-input").addEventListener("input", (e) => {
     state.apiKey = e.target.value;
+    saveState();
+  });
+
+  document.getElementById("save-key-checkbox").addEventListener("change", () => {
     saveState();
   });
 

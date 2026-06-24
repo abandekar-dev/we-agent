@@ -190,6 +190,37 @@ body {
     text-decoration: underline;
 }
 
+.checkbox-label {
+    display: flex !important;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.checkbox-label input[type="checkbox"] {
+    width: auto;
+    accent-color: var(--accent);
+    cursor: pointer;
+}
+
+.security-note {
+    font-size: 10px;
+    color: var(--text-muted);
+    margin-top: 6px;
+    line-height: 1.4;
+    display: flex;
+    align-items: flex-start;
+    gap: 5px;
+}
+
+.security-note i {
+    color: var(--success);
+    margin-top: 1px;
+    flex-shrink: 0;
+}
+
 .form-group select,
 .form-group input {
     width: 100%;
