@@ -154,10 +154,40 @@ body {
 }
 
 .form-group label {
-    display: block;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     font-size: 12px;
     color: var(--text-secondary);
     margin-bottom: 6px;
+}
+
+.key-link {
+    color: var(--accent);
+    text-decoration: none;
+    font-size: 11px;
+    font-weight: 500;
+}
+
+.key-link:hover {
+    color: var(--accent-hover);
+    text-decoration: underline;
+}
+
+.provider-hint {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 6px;
+    line-height: 1.4;
+}
+
+.provider-hint a {
+    color: var(--accent);
+    text-decoration: none;
+}
+
+.provider-hint a:hover {
+    text-decoration: underline;
 }
 
 .form-group select,

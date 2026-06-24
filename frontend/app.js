@@ -40,13 +40,26 @@ function renderModels(providerId) {
   sel.innerHTML = "";
   if (!providerId || !state.providers[providerId]) {
     sel.innerHTML = '<option value="">Select provider first</option>';
+    updateKeyLink(null);
     return;
   }
-  for (const m of state.providers[providerId].models) {
+  const provider = state.providers[providerId];
+  for (const m of provider.models) {
     sel.innerHTML += `<option value="${m.id}">${m.name}</option>`;
   }
-  state.model = state.providers[providerId].models[0]?.id || "";
+  state.model = provider.models[0]?.id || "";
+  updateKeyLink(provider);
   updateBadge();
+}
+
+function updateKeyLink(provider) {
+  const link = document.getElementById("get-key-link");
+  if (provider && provider.key_url) {
+    link.href = provider.key_url;
+    link.style.display = "inline";
+  } else {
+    link.style.display = "none";
+  }
 }
 
 function renderAgents() {
